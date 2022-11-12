@@ -50,3 +50,9 @@ export interface Rates {
 	CAD_USD: number;
 	USD_CAD: number;
 }
+
+export enum AssetName {
+	BTC = "Bitcoin",
+	ETH = "Ethereum",
+	CAD = "Dollars",
+}
