@@ -8,7 +8,7 @@ export interface Transaction {
 	to?: To;
 }
 
-enum Currency {
+export enum Currency {
 	BTC = "BTC",
 	CAD = "CAD",
 	ETH = "ETH",
