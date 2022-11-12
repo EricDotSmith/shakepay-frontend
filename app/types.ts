@@ -11,7 +11,7 @@ export interface Transaction {
 enum Currency {
 	BTC = "BTC",
 	CAD = "CAD",
-	Eth = "ETH",
+	ETH = "ETH",
 }
 
 enum Direction {
