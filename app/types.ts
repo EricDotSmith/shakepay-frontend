@@ -14,12 +14,12 @@ export enum Currency {
 	ETH = "ETH",
 }
 
-enum Direction {
+export enum Direction {
 	CREDIT = "credit",
 	DEBIT = "debit",
 }
 
-enum Type {
+export enum Type {
 	CONVERSION = "conversion",
 	EXTERNAL_ACCOUNT = "external account",
 	PEER = "peer",

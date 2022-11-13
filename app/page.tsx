@@ -6,7 +6,7 @@ import { fetchTransactionHistory, fetchRates, balancesFromTransactionHistory } f
 
 export default async function Home() {
 	const transactionHistory = await fetchTransactionHistory();
-	const rates: Rates = await fetchRates();
+	const rates = await fetchRates();
 
 	const accountBalances = balancesFromTransactionHistory(transactionHistory);
 
