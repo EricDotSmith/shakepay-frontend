@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Currency, Rates } from "./types";
+import { AssetName, Currency, Rates } from "./types";
 import { Container, ContainerHeader, ContainerScrollableBody } from "./components/Container";
 import { fetchTransactionHistory, fetchRates, balancesFromTransactionHistory } from "./utils";
 
@@ -42,7 +42,7 @@ export default async function Home() {
 								/>
 
 								<div className="flex flex-col justify-center">
-									<span className="font-medium">{asset}</span>
+									<span className="font-medium">{AssetName[asset]}</span>
 									{asset !== Currency.CAD && (
 										<span className="text-gray-500">{"$" + rates[(asset + "_" + Currency.CAD) as keyof Rates]}</span>
 									)}
