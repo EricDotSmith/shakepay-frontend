@@ -31,5 +31,22 @@ export const balancesFromTransactionHistory = (
   );
 };
 
+export const accountBalanceInCAD = async (): Promise<string> => {
+  const transactionHistory = await fetchTransactionHistory();
+
+  const rates = await fetchRates();
+
+  const accountBalances = balancesFromTransactionHistory(transactionHistory);
+
+  const accountBalanceInCAD = (
+    accountBalances.CAD +
+    accountBalances.BTC * rates.BTC_CAD +
+    accountBalances.ETH +
+    rates.ETH_CAD
+  ).toFixed(2);
+
+  return accountBalanceInCAD;
+};
+
 export const convertCurrency = (amount: number, from: Currency, to: Currency, currentRates: Rates): number =>
   from === to ? amount : amount * currentRates[(from + "_" + to) as keyof Rates];

@@ -1,20 +1,16 @@
-import Link from "next/link";
-import Image from "next/image";
 import { Container, ContainerHeader, ContainerScrollableBody } from "../../components/Container";
-import { AssetName, Currency, Direction, Transaction, Type } from "../../types";
-import { fetchTransactionHistory, balancesFromTransactionHistory } from "../../utils";
-import { TransactionItem } from "../../components/TransactionItem";
+import { AssetName, Currency } from "../../types";
 
-const GoHomeButton = () => {
-  return (
-    <Link href={`/`}>
-      <div className="font-extrabold text-sm text-gray-600 border-2 p-1 border-gray-300 rounded-md">{"BACK"}</div>
-    </Link>
-  );
-};
+import ContainerBodyContent from "./components/ContainerTransactionsBodyContent";
+import { Suspense } from "react";
+import SkeletonWrapper from "../../components/SkeletonWrapper";
+import Image from "next/image";
+import ContainerHeaderContent, { GoHomeButton } from "./components/ContainerTransactionsHeaderContent";
 
 export default async function Page({ params }: { params: { asset: string } }) {
-  if (!(params.asset in Currency)) {
+  const asset = params.asset;
+
+  if (!(asset in Currency)) {
     return (
       <Container>
         <div className="flex flex-col justify-center h-full items-center">
@@ -25,34 +21,49 @@ export default async function Page({ params }: { params: { asset: string } }) {
     );
   }
 
-  const transactionHistory = (await fetchTransactionHistory()).filter(
-    (transaction) => transaction.currency === params.asset
-  );
-
-  const accountBalances = balancesFromTransactionHistory(transactionHistory);
-
   return (
     <Container>
       <ContainerHeader>
-        <div className="p-4 space-y-2">
-          <div className=" flex">
-            <GoHomeButton />
-            <div className="text-right w-full text-2xl text-gray-600">{AssetName[params.asset as Currency]}</div>
-            <div></div>
-          </div>
-          <div className="flex justify-between">
-            <div className="font-bold text-gray-600">Balance</div>
-            <div className="font-bold text-lg text-gray-800">
-              {accountBalances[params.asset as Currency].toFixed(2)}
+        <Suspense
+          fallback={
+            <div className="p-4 space-y-2">
+              <div className=" flex">
+                <GoHomeButton />
+                <div className="text-right w-full text-2xl text-gray-600">{AssetName[asset as Currency]}</div>
+                <div></div>
+              </div>
+              <div className="flex justify-between">
+                <div className="font-bold text-gray-600">Balance</div>
+                <SkeletonWrapper animation="wave">
+                  <div className="font-bold text-lg text-gray-800">.................</div>
+                </SkeletonWrapper>
+              </div>
             </div>
-          </div>
-        </div>
+          }
+        >
+          {/* @ts-expect-error Async Server Component */}
+          <ContainerHeaderContent asset={asset} />
+        </Suspense>
       </ContainerHeader>
       <ContainerScrollableBody>
         <div className="font-bold text-lg text-gray-800 p-4">Transactions</div>
-        {transactionHistory.map((transaction) => (
-          <TransactionItem transaction={transaction} key={transaction.createdAt as any} />
-        ))}
+        <Suspense
+          fallback={
+            <>
+              {[...new Array(5)].map((_, key) => (
+                <div className="flex w-full space-x-2 p-2" key={key}>
+                  <SkeletonWrapper variant="circular" animation="wave">
+                    <Image src="" width={30} height={30} alt="" />
+                  </SkeletonWrapper>
+                  <SkeletonWrapper width={"100%"} animation="wave"></SkeletonWrapper>
+                </div>
+              ))}
+            </>
+          }
+        >
+          {/* @ts-expect-error Async Server Component */}
+          <ContainerBodyContent asset={asset} />
+        </Suspense>
       </ContainerScrollableBody>
     </Container>
   );
