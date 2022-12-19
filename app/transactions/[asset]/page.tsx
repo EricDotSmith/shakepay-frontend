@@ -1,11 +1,11 @@
 import { Container, ContainerHeader, ContainerScrollableBody } from "../../components/Container";
 import { AssetName, Currency } from "../../types";
 
-import ContainerBodyContent from "./components/ContainerTransactionsBodyContent";
+import ContainerBodyContent from "./components/ContainerBodyContent";
 import { Suspense } from "react";
 import SkeletonWrapper from "../../components/SkeletonWrapper";
 import Image from "next/image";
-import ContainerHeaderContent, { GoHomeButton } from "./components/ContainerTransactionsHeaderContent";
+import ContainerHeaderContent, { GoHomeButton } from "./components/ContainerHeaderContent";
 
 export default async function Page({ params }: { params: { asset: string } }) {
   const asset = params.asset;
