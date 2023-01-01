@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { fetchTransactionHistory, fetchRates, balancesFromTransactionHistory } from "../utils";
 import { AssetName, Currency, Rates } from "../types";
+import currency from "currency.js";
 
 export default async function ContainerBodyContent() {
   const transactionHistory = await fetchTransactionHistory();
@@ -26,15 +27,22 @@ export default async function ContainerBodyContent() {
               <div className="flex flex-col justify-center">
                 <span className="font-medium">{AssetName[asset]}</span>
                 {asset !== Currency.CAD && (
-                  <span className="text-gray-500">{"$" + rates[(asset + "_" + Currency.CAD) as keyof Rates]}</span>
+                  <span className="text-gray-500">
+                    {currency(rates[(asset + "_" + Currency.CAD) as keyof Rates]).format()}
+                  </span>
                 )}
               </div>
             </div>
             <div className="flex flex-col justify-center">
-              <span className="text-right">{accountBalances[asset].toFixed(2)}</span>
+              <span className="text-right">
+                {currency(accountBalances[asset], {
+                  precision: asset === Currency.CAD ? 2 : 8,
+                  symbol: asset === Currency.CAD ? "$" : "",
+                }).format() + ` ${asset}`}
+              </span>
               {asset !== Currency.CAD && (
                 <span className="text-gray-500 text-right">
-                  {(accountBalances[asset] * rates[(asset + "_" + Currency.CAD) as keyof Rates]).toFixed(2)}
+                  {currency(accountBalances[asset] * rates[(asset + "_" + Currency.CAD) as keyof Rates]).format()}
                 </span>
               )}
             </div>

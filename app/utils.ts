@@ -1,4 +1,5 @@
 import { Transaction, Rates, Currency } from "./types";
+import currency from "currency.js";
 
 export const fetchTransactionHistory = async (): Promise<Transaction[]> => {
   return await fetch("https://shakepay.github.io/programming-exercise/web/transaction_history.json").then((res) =>
@@ -38,14 +39,11 @@ export const accountBalanceInCAD = async (): Promise<string> => {
 
   const accountBalances = balancesFromTransactionHistory(transactionHistory);
 
-  const accountBalanceInCAD = (
-    accountBalances.CAD +
-    accountBalances.BTC * rates.BTC_CAD +
-    accountBalances.ETH +
-    rates.ETH_CAD
-  ).toFixed(2);
+  const accountBalanceInCAD = currency(
+    accountBalances.CAD + accountBalances.BTC * rates.BTC_CAD + accountBalances.ETH + rates.ETH_CAD
+  );
 
-  return accountBalanceInCAD;
+  return accountBalanceInCAD.format({ symbol: "" });
 };
 
 export const convertCurrency = (amount: number, from: Currency, to: Currency, currentRates: Rates): number =>

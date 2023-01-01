@@ -1,5 +1,5 @@
 import { Container, ContainerHeader, ContainerScrollableBody } from "../../components/Container";
-import { AssetName, Currency } from "../../types";
+import { Currency } from "../../types";
 
 import ContainerBodyContent from "./components/ContainerBodyContent";
 import { Suspense } from "react";
@@ -29,7 +29,7 @@ export default async function Page({ params }: { params: { asset: string } }) {
             <div className="p-4 space-y-2">
               <div className=" flex">
                 <GoHomeButton />
-                <div className="text-right w-full text-2xl text-gray-600">{AssetName[asset as Currency]}</div>
+                <div className="text-right w-full text-2xl text-gray-600"></div>
                 <div></div>
               </div>
               <div className="flex justify-between">

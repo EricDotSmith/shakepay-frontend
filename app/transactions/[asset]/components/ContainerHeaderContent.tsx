@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { fetchTransactionHistory, balancesFromTransactionHistory } from "../../../utils";
-import { AssetName, Currency } from "../../../types";
+import { Currency } from "../../../types";
+import currency from "currency.js";
+import Image from "next/image";
 
 export const GoHomeButton = () => {
   return (
@@ -25,12 +27,23 @@ const ContainerHeaderContent = async (props: ContainerHeaderContentProps) => {
     <div className="p-4 space-y-2">
       <div className=" flex">
         <GoHomeButton />
-        <div className="text-right w-full text-2xl text-gray-600">{AssetName[asset as Currency]}</div>
+        <div className="flex justify-end w-full text-2xl text-gray-600">
+          <Image src={`/images/currency ${asset.toLowerCase()}.svg`} width={30} height={30} alt="Your Name" />
+        </div>
         <div></div>
       </div>
       <div className="flex justify-between">
         <div className="font-bold text-gray-600">Balance</div>
-        <div className="font-bold text-lg text-gray-800">{accountBalances[asset as Currency].toFixed(2)}</div>
+        <div className="font-bold text-lg text-gray-500">
+          {(asset === Currency.CAD
+            ? currency(accountBalances[asset as Currency]).format()
+            : parseFloat(
+                currency(accountBalances[asset as Currency], {
+                  precision: 8,
+                  symbol: "",
+                }).format()
+              )) + ` ${asset}`}
+        </div>
       </div>
     </div>
   );

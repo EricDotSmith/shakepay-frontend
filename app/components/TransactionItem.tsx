@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Direction, Transaction, Type } from "../types";
+import { Currency, Direction, Transaction, Type } from "../types";
+import currency from "currency.js";
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -40,12 +41,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction })
             alt="Your Name"
           />
           <div>
-            <div className="font-semibold">
-              {transaction.type +
-                (transaction.type === Type.CONVERSION
-                  ? ` ${transaction.from?.currency} -> ${transaction.to?.currency}`
-                  : "")}
-            </div>
+            <div className="font-semibold">{transaction.type}</div>
             <span className="text-gray-600">
               {new Date(transaction.createdAt).toLocaleDateString("en-us", {
                 year: "numeric",
@@ -56,12 +52,23 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction })
           </div>
         </div>
         <div
-          className={`font-semibold text-md ${
-            transaction.direction === "credit" ? `text-green-500` : transaction.direction === "debit" ? "" : ""
+          className={`font-semibold text-md text-right ${
+            transaction.direction === "credit"
+              ? `text-green-500`
+              : transaction.direction === "debit"
+              ? "text-red-500"
+              : "text-gray-500"
           }`}
         >
           {transaction.direction === "credit" ? "" : transaction.direction === "debit" ? "-" : ""}
-          {transaction.amount.toFixed(4)} {transaction.currency}
+          {transaction.currency === Currency.CAD
+            ? currency(transaction.amount).format() + ` ${transaction.currency}`
+            : parseFloat(
+                currency(transaction.amount, {
+                  precision: 8,
+                  symbol: "",
+                }).format()
+              ) + ` ${transaction.currency}`}
         </div>
       </div>
       {showTransactionInfo && (
