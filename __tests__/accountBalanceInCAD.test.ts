@@ -1,9 +1,9 @@
 import { Currency, Direction, Type } from "../app/types";
 import { describe } from "@jest/globals";
 import { Transaction } from "../app/types";
-import { balancesFromTransactionHistory } from "../app/utils";
+import { balancesFromTransactionHistory, convertAssetBalanceToCADWithRates } from "../app/utils";
 
-const transactions1: Transaction[] = [
+const transactions: Transaction[] = [
   {
     amount: 100,
     currency: Currency.CAD,
@@ -39,14 +39,11 @@ const transactions1: Transaction[] = [
     type: Type.PEER,
     createdAt: new Date(),
   },
-];
-
-const transactions2: Transaction[] = [
   {
     amount: 10,
     currency: Currency.CAD,
     direction: Direction.CREDIT,
-    type: Type.EXTERNAL_ACCOUNT,
+    type: Type.PEER,
     createdAt: new Date(),
   },
   {
@@ -63,33 +60,41 @@ const transactions2: Transaction[] = [
     type: Type.EXTERNAL_ACCOUNT,
     createdAt: new Date(),
   },
+  {
+    amount: 10,
+    currency: Currency.CAD,
+    direction: null,
+    type: Type.CONVERSION,
+    createdAt: new Date(),
+    from: {
+      currency: Currency.CAD,
+      amount: 10,
+    },
+    to: {
+      currency: Currency.BTC,
+      amount: 200,
+    },
+  },
 ];
 
-describe("balancesFromTransactionHistory", () => {
-  it("should return zero balances with no transactions", async () => {
-    const balances = balancesFromTransactionHistory([]);
-
-    expect(balances).toEqual({
-      CAD: 0,
-      BTC: 0,
-      ETH: 0,
-    });
-  });
-
-  it("should return an object with correct balances", async () => {
-    const balances1 = balancesFromTransactionHistory(transactions1);
-    const balances2 = balancesFromTransactionHistory(transactions2);
-
-    expect(balances1).toEqual({
-      CAD: -1000,
-      BTC: 0,
-      ETH: 0,
+describe("accountBalanceInCAD", () => {
+  it("should return the correct account balance in CAD currency", () => {
+    // 0 ETH, 200 BTC, -1000 CAD
+    const totalBalanceInCAD = convertAssetBalanceToCADWithRates(balancesFromTransactionHistory(transactions), {
+      BTC_CAD: 1,
+      CAD_BTC: 0,
+      CAD_ETH: 0,
+      ETH_CAD: 1,
+      USD_BTC: 0,
+      BTC_USD: 0,
+      USD_ETH: 0,
+      ETH_USD: 0,
+      BTC_ETH: 0,
+      ETH_BTC: 0,
+      CAD_USD: 0,
+      USD_CAD: 0,
     });
 
-    expect(balances2).toEqual({
-      CAD: 10,
-      BTC: 0,
-      ETH: 0,
-    });
+    expect(totalBalanceInCAD).toEqual(-800);
   });
 });

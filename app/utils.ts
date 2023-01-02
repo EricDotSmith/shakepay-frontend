@@ -22,7 +22,7 @@ export const balancesFromTransactionHistory = (
 ): { BTC: number; ETH: number; CAD: number } => {
   return transactionHistory.reduce(
     (prevBalance, currentTransaction) => {
-      if (!!currentTransaction.direction) {
+      if (currentTransaction.type === "external account" || currentTransaction.type === "peer") {
         const transactionTotal =
           currentTransaction.direction === "credit" ? currentTransaction.amount : -currentTransaction.amount;
 
@@ -31,8 +31,13 @@ export const balancesFromTransactionHistory = (
           [currentTransaction.currency]: prevBalance[currentTransaction.currency] + transactionTotal,
         };
       }
-
-      return prevBalance;
+      return {
+        ...prevBalance,
+        [currentTransaction.from?.currency!]:
+          prevBalance[currentTransaction.from?.currency!] - currentTransaction.from?.amount!,
+        [currentTransaction.to?.currency!]:
+          prevBalance[currentTransaction.to?.currency!] + currentTransaction.to?.amount!,
+      };
     },
     { CAD: 0, BTC: 0, ETH: 0 }
   );
@@ -45,11 +50,16 @@ export const accountBalanceInCAD = async (): Promise<string> => {
 
   const accountBalances = balancesFromTransactionHistory(transactionHistory);
 
-  const accountBalanceInCAD = currency(
-    accountBalances.CAD + accountBalances.BTC * rates.BTC_CAD + accountBalances.ETH + rates.ETH_CAD
-  );
+  const accountBalanceInCAD = currency(convertAssetBalanceToCADWithRates(accountBalances, rates));
 
   return accountBalanceInCAD.format({ symbol: "" });
+};
+
+export const convertAssetBalanceToCADWithRates = (
+  balance: { BTC: number; ETH: number; CAD: number },
+  rates: Rates
+): number => {
+  return balance.CAD + balance.BTC * rates.BTC_CAD + balance.ETH * rates.ETH_CAD;
 };
 
 export const convertCurrency = (amount: number, from: Currency, to: Currency, currentRates: Rates): number =>
