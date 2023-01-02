@@ -1,4 +1,4 @@
-import { Transaction, Rates, Currency } from "./types";
+import { Transaction, Rates, Currency, Rate } from "./types";
 import currency from "currency.js";
 
 export const fetchTransactionHistory = async (): Promise<Transaction[]> => {
@@ -9,6 +9,12 @@ export const fetchTransactionHistory = async (): Promise<Transaction[]> => {
 
 export const fetchRates = async (): Promise<Rates> => {
   return await fetch("https://shakepay.github.io/programming-exercise/web/rates.json").then((res) => res.json());
+};
+
+export const fetchDailyRateHistory = async (rate: keyof Rates): Promise<Rate[]> => {
+  return await fetch(`https://shakepay.github.io/programming-exercise/web/rates_${rate}.json`).then((res) =>
+    res.json()
+  );
 };
 
 export const balancesFromTransactionHistory = (

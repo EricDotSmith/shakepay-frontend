@@ -3,6 +3,7 @@ import Link from "next/link";
 import { fetchTransactionHistory, fetchRates, balancesFromTransactionHistory } from "../utils";
 import { AssetName, Currency, Rates } from "../types";
 import currency from "currency.js";
+import LineChartWrapper from "./LineChartWrapper";
 
 export default async function ContainerBodyContent() {
   const transactionHistory = await fetchTransactionHistory();
@@ -12,6 +13,7 @@ export default async function ContainerBodyContent() {
 
   return (
     <>
+      <LineChartWrapper />
       {(Object.keys(accountBalances) as Currency[]).map((asset, key) => (
         <Link key={key} href={`/transactions/${asset}`}>
           <div className="flex items-center justify-between h-16 p-4">

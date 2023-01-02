@@ -51,6 +51,12 @@ export interface Rates {
   USD_CAD: number;
 }
 
+export interface Rate {
+  pair: keyof Rates;
+  midMarketRate: number;
+  createdAt: string;
+}
+
 export enum AssetName {
   BTC = "Bitcoin",
   ETH = "Ethereum",
