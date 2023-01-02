@@ -19,7 +19,7 @@ interface ContainerHeaderContentProps {
 const ContainerHeaderContent = async (props: ContainerHeaderContentProps) => {
   const { asset } = props;
 
-  const transactionHistory = (await fetchTransactionHistory()).filter((transaction) => transaction.currency === asset);
+  const transactionHistory = await fetchTransactionHistory();
 
   const accountBalances = balancesFromTransactionHistory(transactionHistory);
 
