@@ -9,7 +9,7 @@ import {
 } from "../utils";
 import { AccountBalances, AssetName, Currency, Rates } from "../types";
 import currency from "currency.js";
-import LineChartWrapper from "./LineChartWrapper";
+import PortfolioValueChart from "./PortfolioValueChart";
 
 export default async function ContainerBodyContent() {
   const transactionHistoryData = fetchTransactionHistory();
@@ -77,7 +77,7 @@ export default async function ContainerBodyContent() {
 
   return (
     <>
-      <LineChartWrapper data={dataForGraph} minPoint={minPoint} maxPoint={maxPoint} />
+      <PortfolioValueChart data={dataForGraph} minPoint={minPoint} maxPoint={maxPoint} />
       {(Object.keys(accountBalances) as Currency[]).map((asset, key) => (
         <Link key={key} href={`/transactions/${asset}`}>
           <div className="flex items-center justify-between h-16 p-4">
