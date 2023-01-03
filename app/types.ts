@@ -62,3 +62,9 @@ export enum AssetName {
   ETH = "Ethereum",
   CAD = "Dollars",
 }
+
+export interface AccountBalances {
+  BTC: number;
+  ETH: number;
+  CAD: number;
+}

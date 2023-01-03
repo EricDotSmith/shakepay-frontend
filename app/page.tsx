@@ -28,6 +28,7 @@ export default async function Page() {
         <Suspense
           fallback={
             <>
+              <SkeletonWrapper width={"100%"} height={200} animation="wave"></SkeletonWrapper>
               {[...new Array(5)].map((_, key) => (
                 <div className="flex w-full space-x-2 p-2" key={key}>
                   <SkeletonWrapper variant="circular" animation="wave">

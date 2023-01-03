@@ -1,4 +1,4 @@
-import { Transaction, Rates, Currency, Rate } from "./types";
+import { Transaction, Rates, Currency, Rate, AccountBalances } from "./types";
 import currency from "currency.js";
 
 export const fetchTransactionHistory = async (): Promise<Transaction[]> => {
@@ -17,30 +17,30 @@ export const fetchDailyRateHistory = async (rate: keyof Rates): Promise<Rate[]> 
   );
 };
 
-export const balancesFromTransactionHistory = (
-  transactionHistory: Transaction[]
-): { BTC: number; ETH: number; CAD: number } => {
+export const balancesFromTransactionHistory = (transactionHistory: Transaction[]): AccountBalances => {
   return transactionHistory.reduce(
-    (prevBalance, currentTransaction) => {
-      if (currentTransaction.type === "external account" || currentTransaction.type === "peer") {
-        const transactionTotal =
-          currentTransaction.direction === "credit" ? currentTransaction.amount : -currentTransaction.amount;
-
-        return {
-          ...prevBalance,
-          [currentTransaction.currency]: prevBalance[currentTransaction.currency] + transactionTotal,
-        };
-      }
-      return {
-        ...prevBalance,
-        [currentTransaction.from?.currency!]:
-          prevBalance[currentTransaction.from?.currency!] - currentTransaction.from?.amount!,
-        [currentTransaction.to?.currency!]:
-          prevBalance[currentTransaction.to?.currency!] + currentTransaction.to?.amount!,
-      };
-    },
+    (prevBalance, currentTransaction) => updateBalancesWithTransaction(prevBalance, currentTransaction),
     { CAD: 0, BTC: 0, ETH: 0 }
   );
+};
+
+export const updateBalancesWithTransaction = (balances: AccountBalances, transaction: Transaction): AccountBalances => {
+  const { amount, currency, direction, type, from, to } = transaction;
+
+  if (type === "external account" || type === "peer") {
+    const transactionTotal = direction === "credit" ? amount : -amount;
+
+    return {
+      ...balances,
+      [currency]: balances[currency] + transactionTotal,
+    };
+  }
+
+  return {
+    ...balances,
+    [from?.currency!]: balances[from?.currency!] - from?.amount!,
+    [to?.currency!]: balances[to?.currency!] + to?.amount!,
+  };
 };
 
 export const accountBalanceInCAD = async (): Promise<string> => {
@@ -55,10 +55,7 @@ export const accountBalanceInCAD = async (): Promise<string> => {
   return accountBalanceInCAD.format({ symbol: "" });
 };
 
-export const convertAssetBalanceToCADWithRates = (
-  balance: { BTC: number; ETH: number; CAD: number },
-  rates: Rates
-): number => {
+export const convertAssetBalanceToCADWithRates = (balance: AccountBalances, rates: Rates): number => {
   return balance.CAD + balance.BTC * rates.BTC_CAD + balance.ETH * rates.ETH_CAD;
 };
 
